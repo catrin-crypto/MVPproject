@@ -1,11 +1,11 @@
-package com.example.mvpproject.ui.presenters
+package com.example.mvpproject.presenters
 
 import com.example.mvpproject.ui.IScreens
 import com.example.mvpproject.ui.MainView
-import com.github.terrakok.cicerone.Router
+import com.example.mvpproject.ui.navigation.CustomRouter
 import moxy.MvpPresenter
 
-class MainPresenter(val router: Router, val screens: IScreens) : MvpPresenter<MainView>() {
+class MainPresenter(val router: CustomRouter, val screens: IScreens) : MvpPresenter<MainView>() {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
