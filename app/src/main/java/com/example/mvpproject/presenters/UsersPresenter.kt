@@ -1,18 +1,16 @@
 package com.example.mvpproject.presenters
 
-import com.example.mvpproject.App
-import com.example.mvpproject.App.Navigation.router
 import com.example.mvpproject.model.entities.GitHubUser
-import com.example.mvpproject.model.repository.GithubUsersRepo
+import com.example.mvpproject.model.repository.GithubUsersRepoImpl
 import com.example.mvpproject.ui.IUserListPresenter
-import com.example.mvpproject.ui.UserFragment
 import com.example.mvpproject.ui.UserItemView
 import com.example.mvpproject.ui.UsersView
 import com.example.mvpproject.ui.navigation.CustomRouter
 import com.example.mvpproject.ui.navigation.UserScreen
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import moxy.MvpPresenter
 
-class UsersPresenter(val usersRepo: GithubUsersRepo, val router: CustomRouter) : MvpPresenter<UsersView>(){
+class UsersPresenter(private val usersRepo: GithubUsersRepoImpl, private val router: CustomRouter) : MvpPresenter<UsersView>(){
     class UsersListPresenter : IUserListPresenter{
         val users = mutableListOf<GitHubUser>()
         override var itemClickListener: ((UserItemView) -> Unit)? = null
@@ -24,23 +22,37 @@ class UsersPresenter(val usersRepo: GithubUsersRepo, val router: CustomRouter) :
         }
     }
 
+    private val disposables = CompositeDisposable()
     val usersListPresenter = UsersListPresenter()
 
     override fun onFirstViewAttach() {
-        super.onFirstViewAttach()
         viewState.init()
-        loadData()
+        disposables.add(
+            usersRepo
+                .getUsers()
+                .subscribe(
+                    usersListPresenter.users::addAll
+                    //viewState::showUsers
+                )
+        )
+
+
+//        super.onFirstViewAttach()
+//        viewState.init()
+//        loadData()
 
         usersListPresenter.itemClickListener = {itemView ->
             //usersListPresenter.bindView(itemView)
             displayUser(usersListPresenter.users[itemView.pos])
         }
+        viewState.showUsers()
     }
-    fun loadData(){
-        val users = usersRepo.getUsers()
-        usersListPresenter.users.addAll(users)
-        viewState.updateList()
-    }
+//    fun loadData(){
+//
+//       usersListPresenter.users.addAll(usersRepo
+//           .getUsers().)
+//        viewState.updateList()
+//    }
 
     fun displayUser(user: GitHubUser) =
         router.navigateTo(UserScreen(user.login))
@@ -49,5 +61,10 @@ class UsersPresenter(val usersRepo: GithubUsersRepo, val router: CustomRouter) :
     fun backPressed() : Boolean {
         router.exit()
         return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposables.clear()
     }
 }

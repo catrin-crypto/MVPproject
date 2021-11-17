@@ -8,7 +8,7 @@ import com.example.mvpproject.R.layout.view_user
 import com.example.mvpproject.arguments
 import com.example.mvpproject.databinding.ViewUserBinding
 import com.example.mvpproject.model.entities.GitHubUser
-import com.example.mvpproject.model.repository.GithubUsersRepo
+import com.example.mvpproject.model.repository.GithubUsersRepoImpl
 import com.example.mvpproject.presenters.UserPresenter
 
 
@@ -32,7 +32,7 @@ class UserFragment: MvpAppCompatFragment(view_user), UserView {
     private val presenter: UserPresenter by moxyPresenter {
         UserPresenter(
             userLogin = userLogin,
-            userRepository = GithubUsersRepo()
+            userRepository = GithubUsersRepoImpl()
         )
     }
 

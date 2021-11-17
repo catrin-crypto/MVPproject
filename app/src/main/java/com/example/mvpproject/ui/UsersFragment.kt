@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvpproject.App
 import com.example.mvpproject.databinding.FragmentUsersBinding
-import com.example.mvpproject.model.repository.GithubUsersRepo
+import com.example.mvpproject.model.repository.GithubUsersRepoImpl
 import com.example.mvpproject.ui.adapters.UsersRecyclerViewAdapter
 import com.example.mvpproject.presenters.UsersPresenter
 import moxy.MvpAppCompatFragment
@@ -19,7 +19,7 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
     }
 
     val presenter: UsersPresenter by moxyPresenter {
-        UsersPresenter(GithubUsersRepo(), App.Navigation.router)
+        UsersPresenter(GithubUsersRepoImpl(), App.Navigation.router)
     }
     var adapter: UsersRecyclerViewAdapter? = null
     private var viewUsersBinding: FragmentUsersBinding? = null
@@ -40,9 +40,8 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
         viewUsersBinding?.rvUsers?.adapter = adapter
     }
 
-    override fun updateList() {
+    override fun backPressed() = presenter.backPressed()
+    override fun showUsers() {
         adapter?.notifyDataSetChanged()
     }
-
-    override fun backPressed() = presenter.backPressed()
 }

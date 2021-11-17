@@ -3,7 +3,6 @@ package com.example.mvpproject.ui.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mvpproject.click
 import com.example.mvpproject.databinding.RvItemBinding
 import com.example.mvpproject.ui.IUserListPresenter
 import com.example.mvpproject.ui.UserItemView
