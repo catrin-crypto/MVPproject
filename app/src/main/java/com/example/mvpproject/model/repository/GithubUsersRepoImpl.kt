@@ -1,23 +1,21 @@
 package com.example.mvpproject.model.repository
 
+import com.example.mvpproject.model.entities.GitHubApi
+import com.example.mvpproject.model.entities.GitHubApiFactory
 import com.example.mvpproject.model.entities.GitHubUser
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 
 
-class GithubUsersRepoImpl : UsersRepository{
-    private val users = listOf(
-        GitHubUser("log1"),
-        GitHubUser("log2"),
-        GitHubUser("log3"),
-        GitHubUser("log4"),
-        GitHubUser("log5")
-    )
-    override fun getUsers() : Single<List<GitHubUser>> = Single.just(users)
+class GithubUsersRepoImpl(private val gitHubApi: GitHubApi = GitHubApiFactory.create()) : UsersRepository{
 
-     override fun getUserByLogin(userId: String): Maybe<GitHubUser> =
-        users.firstOrNull { user -> user.login == userId }
-            ?.let {Maybe.just(it)}
-            ?: Maybe.empty()
+    override fun getUsers(): Single<List<GitHubUser>> =
+        gitHubApi
+            .fetchUsers()
+
+    override fun getUserByLogin(userId: String): Maybe<GitHubUser> =
+        gitHubApi
+            .fetchUserByLogin(userId)
+            .onErrorComplete()
 
 }

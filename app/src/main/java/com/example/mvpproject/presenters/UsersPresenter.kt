@@ -1,16 +1,19 @@
 package com.example.mvpproject.presenters
 
 import com.example.mvpproject.model.entities.GitHubUser
-import com.example.mvpproject.model.repository.GithubUsersRepoImpl
+import com.example.mvpproject.model.repository.UsersRepository
 import com.example.mvpproject.ui.IUserListPresenter
 import com.example.mvpproject.ui.UserItemView
 import com.example.mvpproject.ui.UsersView
 import com.example.mvpproject.ui.navigation.CustomRouter
 import com.example.mvpproject.ui.navigation.UserScreen
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.plusAssign
 import moxy.MvpPresenter
 
-class UsersPresenter(private val usersRepo: GithubUsersRepoImpl, private val router: CustomRouter) : MvpPresenter<UsersView>(){
+class UsersPresenter(private val usersRepo: UsersRepository,
+                     private val router: CustomRouter,
+                     private val schedulers : com.example.mvpproject.scheduler.Schedulers) : MvpPresenter<UsersView>(){
     class UsersListPresenter : IUserListPresenter{
         val users = mutableListOf<GitHubUser>()
         override var itemClickListener: ((UserItemView) -> Unit)? = null
@@ -27,14 +30,18 @@ class UsersPresenter(private val usersRepo: GithubUsersRepoImpl, private val rou
 
     override fun onFirstViewAttach() {
         viewState.init()
-        disposables.add(
+        disposables +=
             usersRepo
                 .getUsers()
-                .subscribe(
-                    usersListPresenter.users::addAll
-                    //viewState::showUsers
-                )
-        )
+                .observeOn(schedulers.background())
+                .subscribe({ usersList ->
+                    usersListPresenter.users.addAll(usersList)
+                    viewState.showUsers()
+                },{
+                        error -> viewState.showError(error)})
+
+//                )
+
 
 
 //        super.onFirstViewAttach()
@@ -42,17 +49,10 @@ class UsersPresenter(private val usersRepo: GithubUsersRepoImpl, private val rou
 //        loadData()
 
         usersListPresenter.itemClickListener = {itemView ->
-            //usersListPresenter.bindView(itemView)
             displayUser(usersListPresenter.users[itemView.pos])
         }
-        viewState.showUsers()
+        //viewState.showUsers()
     }
-//    fun loadData(){
-//
-//       usersListPresenter.users.addAll(usersRepo
-//           .getUsers().)
-//        viewState.updateList()
-//    }
 
     fun displayUser(user: GitHubUser) =
         router.navigateTo(UserScreen(user.login))
