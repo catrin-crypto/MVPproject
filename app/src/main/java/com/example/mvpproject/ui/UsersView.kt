@@ -1,0 +1,12 @@
+package com.example.mvpproject.ui
+
+import moxy.MvpView
+import moxy.viewstate.strategy.AddToEndSingleStrategy
+import moxy.viewstate.strategy.StateStrategyType
+
+@StateStrategyType(AddToEndSingleStrategy::class)
+interface UsersView : MvpView{
+    fun init()
+    fun showUsers()
+    fun showError(e: Throwable)
+}
