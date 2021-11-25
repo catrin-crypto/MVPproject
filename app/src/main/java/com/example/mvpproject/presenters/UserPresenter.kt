@@ -13,6 +13,9 @@ class UserPresenter(
         userRepository
             .getUserByLogin(userLogin)
             .subscribe(viewState::showUser)
+        userRepository
+            .getRepositoriesByLogin(userLogin)
+            .subscribe(viewState::showRepositories)
     }
 
 }

@@ -3,12 +3,17 @@ package com.example.mvpproject.ui
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvpproject.App
+import com.example.mvpproject.App.Navigation.router
+import com.example.mvpproject.R
 import com.example.mvpproject.databinding.FragmentUsersBinding
+import com.example.mvpproject.model.repository.GitHubUserRepositoryFactory
 import com.example.mvpproject.model.repository.GithubUsersRepoImpl
 import com.example.mvpproject.ui.adapters.UsersRecyclerViewAdapter
 import com.example.mvpproject.presenters.UsersPresenter
+import com.example.mvpproject.scheduler.SchedulersFactory
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
@@ -19,7 +24,11 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
     }
 
     val presenter: UsersPresenter by moxyPresenter {
-        UsersPresenter(GithubUsersRepoImpl(), App.Navigation.router)
+        UsersPresenter(
+            usersRepo = GitHubUserRepositoryFactory.create(),
+            router = router,
+            schedulers = SchedulersFactory.create()
+        )
     }
     var adapter: UsersRecyclerViewAdapter? = null
     private var viewUsersBinding: FragmentUsersBinding? = null
@@ -44,4 +53,13 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
     override fun showUsers() {
         adapter?.notifyDataSetChanged()
     }
+
+    override fun showError(e:Throwable) {
+        activity?.runOnUiThread {
+            Toast.makeText(context, getString(R.string.failed_to_get_users)+
+                    " " + e.toString() +
+                    " " + e.localizedMessage, Toast.LENGTH_LONG).show()
+        }
+    }
+
 }

@@ -6,6 +6,12 @@
     android:foreground="?attr/selectableItemBackground"
     android:gravity="center_vertical">
 
+    <ImageView
+        android:id="@+id/avatar_iv"
+        android:layout_width="@dimen/avatar_iv_size"
+        android:layout_height="@dimen/avatar_iv_size"
+        android:cropToPadding="true"/>
+
     <TextView
         android:id="@+id/login_tv"
         android:layout_width="wrap_content"
