@@ -1,11 +1,10 @@
 package com.example.mvpproject.ui
 
-import com.example.mvpproject.model.entities.GitHubUser
-import com.example.mvpproject.model.entities.UserRepositories
-import moxy.MvpView
+import com.example.mvpproject.model.api.GitHubUser
+import com.example.mvpproject.model.api.UserRepositories
 import moxy.viewstate.strategy.alias.SingleState
 
-interface UserView : MvpView {
+interface UserView : MainView {
 
     @SingleState
     fun showUser(user: GitHubUser)

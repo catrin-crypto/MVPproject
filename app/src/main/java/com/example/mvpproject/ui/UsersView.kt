@@ -1,12 +1,10 @@
 package com.example.mvpproject.ui
 
-import moxy.MvpView
-import moxy.viewstate.strategy.AddToEndSingleStrategy
-import moxy.viewstate.strategy.StateStrategyType
+import com.example.mvpproject.model.api.GitHubUser
+import moxy.viewstate.strategy.alias.SingleState
 
-@StateStrategyType(AddToEndSingleStrategy::class)
-interface UsersView : MvpView{
-    fun init()
-    fun showUsers()
-    fun showError(e: Throwable)
+interface UsersView : MainView{
+    @SingleState
+    fun showUsers(users: List<GitHubUser>)
+
 }

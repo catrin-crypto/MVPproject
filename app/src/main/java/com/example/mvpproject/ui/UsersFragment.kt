@@ -1,65 +1,58 @@
 package com.example.mvpproject.ui
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import android.view.View
 import android.widget.Toast
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mvpproject.App
+import androidx.fragment.app.Fragment
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.example.mvpproject.arguments
 import com.example.mvpproject.App.Navigation.router
-import com.example.mvpproject.R
+import com.example.mvpproject.R.layout.fragment_users
 import com.example.mvpproject.databinding.FragmentUsersBinding
-import com.example.mvpproject.model.repository.GitHubUserRepositoryFactory
-import com.example.mvpproject.model.repository.GithubUsersRepoImpl
-import com.example.mvpproject.ui.adapters.UsersRecyclerViewAdapter
+import com.example.mvpproject.model.api.GitHubUser
+import com.example.mvpproject.model.repository.datasource.GitHubUserRepositoryFactory
 import com.example.mvpproject.presenters.UsersPresenter
 import com.example.mvpproject.scheduler.SchedulersFactory
+import com.example.mvpproject.ui.adapters.UsersAdapter
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
-class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
+
+class UsersFragment: MvpAppCompatFragment(fragment_users), UsersView, UsersAdapter.Delegate {
 
     companion object {
-        fun newInstance() = UsersFragment()
+
+        fun newInstance(): Fragment =
+            UsersFragment()
+                .arguments()
     }
 
-    val presenter: UsersPresenter by moxyPresenter {
+    private val presenter: UsersPresenter by moxyPresenter {
         UsersPresenter(
             usersRepo = GitHubUserRepositoryFactory.create(),
             router = router,
             schedulers = SchedulersFactory.create()
         )
     }
-    var adapter: UsersRecyclerViewAdapter? = null
-    private var viewUsersBinding: FragmentUsersBinding? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ) = FragmentUsersBinding.inflate(inflater, container, false).also { viewUsersBinding = it }.root
+    private val viewBinding: FragmentUsersBinding by viewBinding()
+    private var usersAdapter : UsersAdapter? = null
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        viewUsersBinding = null
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        usersAdapter = UsersAdapter(delegate = this)
+        viewBinding.rvUsers.adapter = usersAdapter
     }
 
-    override fun init() {
-        viewUsersBinding?.rvUsers?.layoutManager = LinearLayoutManager(context)
-        adapter = UsersRecyclerViewAdapter(presenter.usersListPresenter)
-        viewUsersBinding?.rvUsers?.adapter = adapter
+    override fun showUsers(users: List<GitHubUser>) {
+        usersAdapter?.submitList(users)
     }
 
-    override fun backPressed() = presenter.backPressed()
-    override fun showUsers() {
-        adapter?.notifyDataSetChanged()
+    override fun showError(error: Throwable) {
+        Toast.makeText(requireContext(), error.message, Toast.LENGTH_LONG).show()
     }
 
-    override fun showError(e:Throwable) {
-        activity?.runOnUiThread {
-            Toast.makeText(context, getString(R.string.failed_to_get_users)+
-                    " " + e.toString() +
-                    " " + e.localizedMessage, Toast.LENGTH_LONG).show()
-        }
-    }
+    override fun onUserPicked(user: GitHubUser) =
+        presenter.displayUser(user)
 
 }
