@@ -6,19 +6,19 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.mvpproject.arguments
-import com.example.mvpproject.App.Navigation.router
 import com.example.mvpproject.R.layout.fragment_users
 import com.example.mvpproject.databinding.FragmentUsersBinding
 import com.example.mvpproject.model.api.GitHubUser
-import com.example.mvpproject.model.repository.datasource.GitHubUserRepositoryFactory
+import com.example.mvpproject.model.repository.datasource.UsersRepository
 import com.example.mvpproject.presenters.UsersPresenter
-import com.example.mvpproject.scheduler.SchedulersFactory
+import com.example.mvpproject.scheduler.Schedulers
 import com.example.mvpproject.ui.adapters.UsersAdapter
-import moxy.MvpAppCompatFragment
+import com.example.mvpproject.ui.presentation.AbsFragment
 import moxy.ktx.moxyPresenter
+import javax.inject.Inject
 
 
-class UsersFragment: MvpAppCompatFragment(fragment_users), UsersView, UsersAdapter.Delegate {
+class UsersFragment: AbsFragment(fragment_users), UsersView, UsersAdapter.Delegate {
 
     companion object {
 
@@ -27,11 +27,14 @@ class UsersFragment: MvpAppCompatFragment(fragment_users), UsersView, UsersAdapt
                 .arguments()
     }
 
+    @Inject
+    lateinit var gitHubUserRepository: UsersRepository
+
     private val presenter: UsersPresenter by moxyPresenter {
         UsersPresenter(
-            usersRepo = GitHubUserRepositoryFactory.create(),
             router = router,
-            schedulers = SchedulersFactory.create()
+            usersRepo = gitHubUserRepository,
+            schedulers = schedulers
         )
     }
 

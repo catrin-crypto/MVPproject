@@ -9,9 +9,11 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
 import moxy.MvpPresenter
 
-class UsersPresenter(private val usersRepo: UsersRepository,
-                     private val router: Router,
-                     private val schedulers : com.example.mvpproject.scheduler.Schedulers) : MvpPresenter<UsersView>() {
+class UsersPresenter(
+    private val usersRepo: UsersRepository,
+    private val router: Router,
+    private val schedulers: com.example.mvpproject.scheduler.Schedulers
+) : MvpPresenter<UsersView>() {
 
 
     private val disposables = CompositeDisposable()

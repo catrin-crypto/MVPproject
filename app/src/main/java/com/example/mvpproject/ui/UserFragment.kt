@@ -13,12 +13,14 @@ import com.example.mvpproject.arguments
 import com.example.mvpproject.databinding.ViewUserBinding
 import com.example.mvpproject.model.api.GitHubUser
 import com.example.mvpproject.model.api.UserRepositories
-import com.example.mvpproject.model.repository.datasource.GitHubUserRepositoryFactory
+import com.example.mvpproject.model.repository.datasource.UsersRepository
 import com.example.mvpproject.presenters.UserPresenter
 import com.example.mvpproject.ui.adapters.RepositoriesListAdapter
+import com.example.mvpproject.ui.presentation.AbsFragment
+import javax.inject.Inject
 
 
-class UserFragment : MvpAppCompatFragment(view_user), UserView {
+class UserFragment : AbsFragment(view_user), UserView {
 
     companion object {
         private const val ARG_USER_LOGIN = "arg_user_login"
@@ -32,11 +34,14 @@ class UserFragment : MvpAppCompatFragment(view_user), UserView {
         arguments?.getString(ARG_USER_LOGIN).orEmpty()
     }
 
+    @Inject
+    lateinit var gitHubUserRepository: UsersRepository
+
     @Suppress("unused")
     private val presenter: UserPresenter by moxyPresenter {
         UserPresenter(
             userLogin = userLogin,
-            userRepository = GitHubUserRepositoryFactory.create()
+            userRepository = gitHubUserRepository,
         )
     }
 

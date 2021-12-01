@@ -4,10 +4,13 @@ import com.example.mvpproject.model.api.GitHubUser
 import com.example.mvpproject.model.localStorage.Storage
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
+import javax.inject.Inject
+import javax.inject.Named
 
 
-class UserCacheDataSourceImpl(
-    private val gitHubStorage: Storage
+class UserCacheDataSourceImpl
+    @Inject constructor(
+    @Named("Persisted") private val gitHubStorage: Storage
 ) : UserCacheDataSource {
 
     override fun retain(users: List<GitHubUser>): Observable<List<GitHubUser>> =

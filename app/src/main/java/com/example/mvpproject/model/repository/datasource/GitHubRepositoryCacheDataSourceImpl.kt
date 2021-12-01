@@ -4,9 +4,12 @@ import com.example.mvpproject.model.api.UserRepositories
 import com.example.mvpproject.model.localStorage.Storage
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
+import javax.inject.Inject
+import javax.inject.Named
 
-class GitHubRepositoryCacheDataSourceImpl(
-    private val gitHubStorage: Storage
+class GitHubRepositoryCacheDataSourceImpl
+    @Inject constructor(
+    @Named("Persisted") private val gitHubStorage: Storage
 ): GitHubRepositoryCacheDataSource {
 
     override fun getUserRepositories(login: String): Observable<List<UserRepositories>> =

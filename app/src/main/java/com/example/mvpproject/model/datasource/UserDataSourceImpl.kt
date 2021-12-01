@@ -5,8 +5,10 @@ import com.example.mvpproject.model.api.GitHubUser
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class UserDataSourceImpl(
+class UserDataSourceImpl
+    @Inject constructor(
     private val gitHubApi: GitHubApi
 ) : UserDataSource {
 

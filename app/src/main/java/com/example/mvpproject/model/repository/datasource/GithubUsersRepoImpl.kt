@@ -5,9 +5,11 @@ import com.example.mvpproject.model.api.UserRepositories
 import com.example.mvpproject.model.datasource.UserCacheDataSource
 import com.example.mvpproject.model.datasource.UserDataSource
 import io.reactivex.rxjava3.core.Observable
+import javax.inject.Inject
 
 
-class GitHubUserRepositoryImpl(
+class GitHubUserRepositoryImpl
+    @Inject constructor(
     private val userDataSource: UserDataSource,
     private val userCacheDataSource: UserCacheDataSource,
     private val gitHubRepositoryDataSource: GitHubRepositoryDataSource,
